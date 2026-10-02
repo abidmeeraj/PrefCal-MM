@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below. The accompanying article is under review; its citation will be added on publication."
+title: "PrefCal-MM: Preference-Calibrated Evaluation of Multimodal Summaries"
+version: 1.0.0
+license: MIT
+repository-code: "https://github.com/abidmeeraj/PrefCal-MM"
+authors:
+  - family-names: Ali
+    given-names: Abid
+    affiliation: "School of Computing, Macquarie University"
+  - family-names: Mollá-Aliod
+    given-names: Diego
+    affiliation: "School of Computing, Macquarie University"
+  - family-names: Naseem
+    given-names: Usman
+    affiliation: "School of Computing, Macquarie University"

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prefcal-mm"
+version = "1.0.0"
+description = "PrefCal-MM: preference-calibrated evaluation of multimodal summaries"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+  { name = "Abid Ali" },
+  { name = "Diego Mollá-Aliod" },
+  { name = "Usman Naseem" },
+]
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.1",
+  "transformers>=4.49",
+  "accelerate",
+  "huggingface_hub",
+  "numpy",
+  "pandas",
+  "scipy",
+  "scikit-learn",
+  "PyYAML",
+  "Pillow",
+]
+
+[project.optional-dependencies]
+lmdb = ["lmdb"]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+include = ["prefcal_mm*"]

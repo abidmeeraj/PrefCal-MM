@@ -1,0 +1,12 @@
+torch>=2.1
+transformers>=4.49        # Qwen2.5-VL support
+accelerate                # device_map="auto" for multi-GPU / offloaded loading
+huggingface_hub
+numpy
+pandas
+scipy
+scikit-learn
+PyYAML
+Pillow
+# Optional: read images from an LMDB store instead of files
+# lmdb

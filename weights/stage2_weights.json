@@ -1,0 +1,20 @@
+{
+  "w_text": 0.8009060347769481,
+  "w_relevance": 0.1747587601350234,
+  "w_diversity": 0.024335205088028538,
+  "raw_weights": [
+    9.096888307539492,
+    1.9849531064591626,
+    0.27640526230834944
+  ],
+  "method": "feature_augmented_bt",
+  "target": "overall_quality",
+  "n_pairs": 5197,
+  "cv_accuracy": 0.8524168418059972,
+  "cv_accuracy_std": 0.008999939942413434,
+  "feature_order": [
+    "stext_unified",
+    "srelevance",
+    "sdiversity"
+  ]
+}

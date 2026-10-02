@@ -1,0 +1,48 @@
+# Hugging Face model identifiers for every judge role.
+#
+# `final` is the default model for each role. `candidates`
+# lists drop-in alternatives that load through the same code path; select one
+# for a single run with `--model <id>` on `prefcal_mm.cli.score`, or by setting
+# the environment variable PREFCAL_MODEL_<ROLE> (e.g. PREFCAL_MODEL_VAFV).
+
+# Pillar 1: atomic-fact decomposition and Stage-A text verification.
+factual_consistency:
+  final: Qwen/Qwen2.5-7B-Instruct
+  candidates:
+    - Qwen/Qwen2.5-7B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
+    - mistralai/Mistral-7B-Instruct-v0.3
+
+# Pillar 1: G-Eval coherence, fluency and relevance.
+qualitative:
+  final: Qwen/Qwen2.5-7B-Instruct
+  candidates:
+    - Qwen/Qwen2.5-7B-Instruct
+    - Qwen/Qwen2.5-72B-Instruct
+    - meta-llama/Llama-3.1-8B-Instruct
+    - mistralai/Mistral-7B-Instruct-v0.3
+
+# Pillar 1: Stage-B Visual Atomic Fact Verifier (VAFV). Needs native
+# multi-image input, since all source images are presented together.
+vafv:
+  final: Qwen/Qwen2.5-VL-7B-Instruct
+  candidates:
+    - Qwen/Qwen2.5-VL-7B-Instruct
+    - Qwen/Qwen2.5-VL-72B-Instruct
+    - llava-hf/llava-onevision-qwen2-7b-ov-hf
+
+# Pillar 2: image-text alignment judge over the selected output images.
+image_text_relevance:
+  final: Qwen/Qwen2.5-VL-72B-Instruct
+  candidates:
+    - Qwen/Qwen2.5-VL-72B-Instruct
+    - Qwen/Qwen2.5-VL-7B-Instruct
+    - llava-hf/llava-onevision-qwen2-7b-ov-hf
+
+# Pillar 3: CLIP image encoder for visual diversity.
+visual_diversity:
+  final: openai/clip-vit-base-patch16
+  candidates:
+    - openai/clip-vit-base-patch16
+    - openai/clip-vit-base-patch32
+    - openai/clip-vit-large-patch14

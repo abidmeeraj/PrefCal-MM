@@ -1,0 +1,90 @@
+# PrefCal-MM configuration. The values below are the default settings.
+# Relative paths are resolved against the repository root.
+
+decoding:
+  # Deterministic decoding for every judge (temperature 0, sampling disabled).
+  do_sample: false
+  temperature: 0
+  max_new_tokens: 512
+  # G-Eval scoring for coherence / fluency / relevance:
+  #   greedy_integer       - parse the integer the judge generates (default)
+  #   probability_weighted - expectation over the 1-5 score tokens (original G-Eval)
+  geval_scoring_mode: greedy_integer
+  # Token budget for the batched verifiers; null -> 16 * n_facts + 32.
+  verifier_max_new_tokens: null
+
+diversity:
+  # dpp_logdet - determinantal point process kernel (default)
+  # tce        - Truncated CLIP Entropy (alternative)
+  formula: dpp_logdet
+  dpp_eps: 0.001          # ridge added to the Gram matrix before log-det
+  tce_max_eigenvalues: 20 # top-k eigenvalues kept by TCE
+
+# Fixed normalisation bounds mapping native component ranges to [0, 1].
+normalisation:
+  image_text_relevance: [1, 5]   # 1-5 Likert
+  tce: [0, 15]                   # entropy bound for the tce formula
+
+bradley_terry:
+  # Feature-augmented Bradley-Terry = L2 logistic regression on feature
+  # differences, no intercept. Negative weights are clipped to zero and the
+  # vector is normalised to sum to one.
+  C: 100.0
+  max_iter: 2000
+  cv_folds: 5           # GroupKFold grouped by article_id
+
+calibration:
+  # A sub-metric is admitted to the composite if Kendall tau-b against its
+  # matched human dimension is >= threshold.
+  threshold: 0.10
+  dimensions:
+    sfact_unified: consistency
+    srel: relevance
+    scoh: coherence
+    sflu: fluency
+    srelevance: text_images_relevance
+
+evaluation:
+  bootstrap_n: 1000
+  target: overall_quality
+
+runtime:
+  seed: 42
+
+paths:
+  weights_dir: weights
+  outputs_dir: outputs
+
+datasets:
+  # mLLM-EVAL benchmark in its released folder layout:
+  #   <data_dir>/<article_id>_<system_name>/{source_doc.txt, source_img/, summary.txt, summary_img/}
+  mllm_eval:
+    data_dir: data/mllm_eval/meta_eval_data
+    annotations_csv: data/mllm_eval/MM_Eval_annotations.csv
+    # Annotation CSV column -> internal dimension name. `ID` is
+    # "<article_id>_<system_name>".
+    annotation_columns:
+      ID: id
+      Relevance: relevance
+      Coherence: coherence
+      Consistency: consistency
+      Fluency: fluency
+      Summary_Images_Quality: image_set_quality
+      Text_Summary_Summary_Images_Relevance: text_images_relevance
+      Overall_Quality: overall_quality
+
+  # Template for scoring your own outputs from a CSV (one row per summary).
+  # Copy this block under a new name and pass `--dataset <name>`, or pass
+  # `--csv <path>` to use it directly. Image columns hold a JSON list of
+  # paths (relative to image_root) or, if lmdb_path is set, LMDB keys.
+  custom_csv:
+    csv_path: data/custom/summaries.csv
+    id_column: id
+    system_column: null          # optional; defaults to system_name below
+    system_name: system
+    source_text_column: source_text
+    summary_column: summary
+    source_images_column: source_images
+    selected_images_column: selected_images
+    image_root: data/custom/images
+    lmdb_path: null

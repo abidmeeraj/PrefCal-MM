@@ -1,0 +1,23 @@
+{
+  "w_fact": 0.2534772219967949,
+  "w_rel": 0.2494243586164082,
+  "w_coh": 0.23325907257666656,
+  "w_flu": 0.2638393468101302,
+  "raw_weights": [
+    2.531796801066563,
+    2.4913157414242386,
+    2.329852635740284,
+    2.635296414357206
+  ],
+  "method": "feature_augmented_bt",
+  "target": "overall_quality",
+  "n_pairs": 5197,
+  "cv_accuracy": 0.8493378823911044,
+  "cv_accuracy_std": 0.013382322728773509,
+  "feature_order": [
+    "sfact_unified",
+    "srel",
+    "scoh",
+    "sflu"
+  ]
+}

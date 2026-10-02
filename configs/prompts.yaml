@@ -1,0 +1,145 @@
+# Prompt templates for every judge. Placeholders in {braces} are filled at
+# run time; literal braces are escaped as {{ }}.
+
+# ── Pillar 1: atomic-fact decomposition and Stage-A text verification ──
+factual_consistency:
+  decompose: |
+    Decompose the following summary into a list of atomic facts. Each atomic fact must express exactly one verifiable claim. Return each fact on a new line, prefixed with '- '.
+
+    Example 1:
+    Summary: John Smith, aged 45, was arrested in London on Monday for theft.
+    - John Smith was arrested.
+    - John Smith is 45 years old.
+    - The arrest occurred in London.
+    - The arrest occurred on Monday.
+    - The arrest was for theft.
+
+    Example 2:
+    Summary: The company reported record profits of $5 million in Q3, driven by strong sales in Asia.
+    - The company reported record profits.
+    - The profits were $5 million.
+    - The profits were reported in Q3.
+    - Strong sales drove the profits.
+    - The strong sales occurred in Asia.
+
+    Now decompose this summary:
+    Summary: {summary}
+  verify_batch: |
+    Given the source document, determine whether each numbered claim is supported.
+
+    Source: {source}
+
+    Claims:
+    {claims}
+
+    Output exactly {n} lines, one per claim, in the format
+        <number>. supported
+    or
+        <number>. not_supported
+    Use only those two labels. Do not add commentary, reasoning, or any other text.
+
+    Verdicts:
+
+# ── Pillar 1: G-Eval qualitative attributes (Liu et al., 2023) ──
+qualitative:
+  coherence: |
+    You will be given one summary written for a news article. Your task is to rate the summary on one metric. Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+    Evaluation Criteria:
+    Coherence (1-5) - the collective quality of all sentences. We align this dimension with the DUC quality question of structure and coherence whereby 'the summary should be well-structured and well-organized. The summary should not just be a heap of related information, but should build from sentence to a coherent body of information about a topic.'
+
+    Evaluation Steps:
+    1. Read the news article carefully and identify the main topic and key points.
+    2. Read the summary and compare it to the news article. Check if the summary covers the main topic and key points of the news article, and if it presents them in a clear and logical order.
+    3. Assign a score for coherence on a scale of 1 to 5, where 1 is the lowest and 5 is the highest based on the Evaluation Criteria.
+
+    Example:
+    Source Text: {source}
+    Summary: {summary}
+
+    Evaluation Form (scores ONLY):
+    - Coherence:
+
+  fluency: |
+    You will be given one summary written for a news article. Your task is to rate the summary on one metric. Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+    Evaluation Criteria:
+    Fluency (1-5): This rating measures the quality of individual sentences, are they well-written and grammatically correct. Consider the quality of individual sentences.
+
+    Evaluation Steps:
+    1. Read the given summary.
+    2. Evaluate the fluency of the summary on a scale of 1-5 based on the criteria provided.
+    3. Provide the rating.
+
+    Example:
+    Summary: {summary}
+
+    Evaluation Form (scores ONLY):
+    - Fluency:
+
+
+
+  relevance: |
+    You will be given one summary written for a news article. Your task is to rate the summary on one metric. Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+    Evaluation Criteria:
+    Relevance (1-5) - selection of important content from the source. The summary should include only important information from the source document. Annotators were instructed to penalize summaries which contained redundancies and excess information.
+
+    Evaluation Steps:
+    1. Read the summary and the source document carefully.
+    2. Compare the summary to the source document and identify the main points of the article.
+    3. Assess how well the summary covers the main points of the article, and how much irrelevant or redundant information it contains.
+    4. Assign a relevance score from 1 to 5.
+
+    Example:
+    Source Text: {source}
+    Summary: {summary}
+
+    Evaluation Form (scores ONLY):
+    - Relevance:
+
+# ── Pillar 2: image-text alignment (MLLM-as-a-judge over the selected images) ──
+image_text_relevance: |
+  You are evaluating whether a set of images appropriately complements a text summary.
+  Evaluation criteria: Alignment, Coverage, Coherence, Visual grounding of key claims.
+  Output: A single integer score from 1 (poor) to 5 (excellent). Use the FULL scale —
+  scores of 4 and 5 are common when images do their job; do not default to 3 when
+  unsure. The anchors are:
+    1 = clearly inadequate or misleading; almost no relevant content (rare; <10% of cases).
+    2 = mostly off-topic with only weak overlap.
+    3 = partial fit: some matching elements but noticeable gaps or off-topic content.
+    4 = most key visual elements align with the summary; minor mismatches are fine.
+    5 = images cover all major claims with no contradictions; near-perfect alignment.
+  Guidelines:
+  1. Do not assume context not visible in summary or images.
+  2. Count an entity only if clearly identifiable (face, logo, signage, landmark).
+  3. Specific summaries require specific visual matches to score highly.
+  4. Contradictions (wrong person/place/event/time) warrant a low score.
+  5. Generic stock-like visuals for specific summaries warrant a lower score.
+  6. Near-duplicates or images dominated by themes absent from the summary warrant a lower score.
+  7. A score of 5 is reachable and expected whenever the images substantively support
+     the summary's main claims; reserve it for genuinely strong alignment, not perfection.
+  Text summary: {summary}
+  [Images provided as vision inputs]
+  Respond with only the score (1-5):
+
+# ── Pillar 1: Stage-B visual verification (VAFV) over all source images ──
+vafv_batch: |
+  You are a visual fact-checker. For each numbered claim, decide if it is SUPPORTED or NOT SUPPORTED by the images shown.
+
+  Rules:
+  - Only verify what is directly visible in the images.
+  - Do not use prior knowledge — only what you can see.
+  - SUPPORTED = clear, unambiguous visual evidence confirms the claim.
+  - NOT SUPPORTED = images are insufficient, ambiguous, irrelevant, or contradict the claim.
+
+  Claims:
+  {claims}
+
+  Output exactly {n} lines, one per claim, in the format
+      <number>. supported
+  or
+      <number>. not_supported
+  Use only those two labels. Do not add reasoning or any other text.
+
+  Verdicts:
